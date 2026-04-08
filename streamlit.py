@@ -5646,17 +5646,60 @@ import plotly.graph_objects as go
 st.set_page_config(page_title="GHG Summary Analyzer", layout="wide")
 
 # ✅ ADD THIS HERE
+# st.markdown("""
+# <style>
+
+# /* Sidebar background */
+# section[data-testid="stSidebar"] {
+#     background-color: #020617;
+# }
+
+# /* Sidebar text */
+# section[data-testid="stSidebar"] * {
+#     color: #E2E8F0 !important;
+#     font-size: 16px !important;
+# }
+
+# /* Sidebar headers */
+# section[data-testid="stSidebar"] h1,
+# section[data-testid="stSidebar"] h2,
+# section[data-testid="stSidebar"] h3 {
+#     font-size: 20px !important;
+#     font-weight: 600;
+#     color: #38BDF8 !important;
+# }
+
+# /* Input labels */
+# section[data-testid="stSidebar"] label {
+#     font-size: 16px !important;
+#     font-weight: 500;
+# }
+
+# /* Inputs */
+# section[data-testid="stSidebar"] input,
+# section[data-testid="stSidebar"] div {
+#     font-size: 16px !important;
+# }
+
+# </style>
+# """, unsafe_allow_html=True)
 st.markdown("""
 <style>
 
+/* Main app background */
+.stApp {
+    background-color: #FFFFFF;
+    color: #1E293B;
+}
+
 /* Sidebar background */
 section[data-testid="stSidebar"] {
-    background-color: #020617;
+    background-color: #F8FAFC;
 }
 
 /* Sidebar text */
 section[data-testid="stSidebar"] * {
-    color: #E2E8F0 !important;
+    color: #1E293B !important;
     font-size: 16px !important;
 }
 
@@ -5666,7 +5709,7 @@ section[data-testid="stSidebar"] h2,
 section[data-testid="stSidebar"] h3 {
     font-size: 20px !important;
     font-weight: 600;
-    color: #38BDF8 !important;
+    color: #2563EB !important;
 }
 
 /* Input labels */
@@ -5681,8 +5724,14 @@ section[data-testid="stSidebar"] div {
     font-size: 16px !important;
 }
 
+/* Fix plot text visibility */
+.plotly text {
+    fill: #1E293B !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
+
 st.title("GHG Summary Analyzer")
 
 uploaded = st.file_uploader("Upload Excel (.xlsx)", type=["xlsx"])
@@ -5905,20 +5954,45 @@ def make_gei_chart(ghg_data, t_line_value, selected_months, chart_type):
         line=dict(color="#43A047")
     ))
 
+#     fig.update_layout(
+#     title="GEI Analysis",
+#     xaxis=dict(
+#         title="Month (Fiscal Year Apr → Mar)",
+#         categoryorder="array",
+#         categoryarray=FISCAL_YEAR_ORDER
+#     ),
+#     yaxis=dict(title="GEI (tCO₂ eq/ton)"),
+#     height=600,
+#     # plot_bgcolor="#0f172a",
+#     # paper_bgcolor="#020617",
+#     # font=dict(color="white")
+#     plot_bgcolor="#FFFFFF",
+# paper_bgcolor="#FFFFFF",
+# font=dict(color="#1E293B")
+# )
     fig.update_layout(
-    title="GEI Analysis",
-    xaxis=dict(
-        title="Month (Fiscal Year Apr → Mar)",
-        categoryorder="array",
-        categoryarray=FISCAL_YEAR_ORDER
-    ),
-    yaxis=dict(title="GEI (tCO₂ eq/ton)"),
-    height=600,
-    plot_bgcolor="#0f172a",
-    paper_bgcolor="#020617",
-    font=dict(color="white")
-)
-
+        title=dict(
+            text="GEI Analysis",
+            font=dict(size=26, color="#0F172A"),  # 🔥 Bigger title
+            x=0.5
+        ),
+        xaxis=dict(
+            title="Month (Fiscal Year Apr → Mar)",
+            categoryorder="array",
+            categoryarray=FISCAL_YEAR_ORDER,
+            title_font=dict(size=18, color="#1E293B"),  # 🔥 axis title bigger
+            tickfont=dict(size=14, color="#1E293B")     # 🔥 month labels bigger
+        ),
+        yaxis=dict(
+            title="GEI (tCO₂ eq/ton)",
+            title_font=dict(size=18, color="#1E293B"),
+            tickfont=dict(size=14, color="#1E293B")
+        ),
+        height=600,
+        plot_bgcolor="#FFFFFF",
+        paper_bgcolor="#FFFFFF",
+        font=dict(size=14, color="#1E293B")  # 🔥 overall font
+    )
     # fig.update_layout(
     #     title="GEI Analysis",
     #     height=600,
@@ -6008,19 +6082,62 @@ def make_other_chart(ghg_data, label, chart_type, y_axis_label, color, selected_
     #     font=dict(color="white")
     # )
 
+    # fig.update_layout(
+    #     title=label,
+    #     xaxis=dict(
+    #         title="Month (Fiscal Year Apr → Mar)",
+    #         categoryorder="array",
+    #         categoryarray=FISCAL_YEAR_ORDER
+    #     ),
+    #     yaxis=dict(title=y_axis_label),
+    #     height=420,
+    #     plot_bgcolor="#0f172a",
+    #     paper_bgcolor="#020617",
+    #     font=dict(color="white")
+    # )
+    
     fig.update_layout(
-        title=label,
-        xaxis=dict(
-            title="Month (Fiscal Year Apr → Mar)",
-            categoryorder="array",
-            categoryarray=FISCAL_YEAR_ORDER
-        ),
-        yaxis=dict(title=y_axis_label),
-        height=420,
-        plot_bgcolor="#0f172a",
-        paper_bgcolor="#020617",
-        font=dict(color="white")
-    )
+    # title=dict(
+    #     text=label,
+    #     font=dict(size=18, color="#1E293B"),
+    #     x=0.5  # center title
+    # ),
+    title=dict(
+    text=f"<b>{label}</b>",
+    font=dict(size=22, color="#0F172A"),  # 🔥 Bigger title
+    x=0.5,
+    xanchor="center"
+),
+xaxis=dict(
+    title="Month (Fiscal Year Apr → Mar)",
+    categoryorder="array",
+    categoryarray=FISCAL_YEAR_ORDER,
+    title_font=dict(size=16, color="#1E293B"),
+    tickfont=dict(size=14, color="#1E293B")
+),
+yaxis=dict(
+    title=y_axis_label,
+    title_font=dict(size=16, color="#1E293B"),
+    tickfont=dict(size=14, color="#1E293B")
+),
+    # xaxis=dict(
+    #     title="Month (Fiscal Year Apr → Mar)",
+    #     categoryorder="array",
+    #     categoryarray=FISCAL_YEAR_ORDER,
+    #     title_font=dict(color="#1E293B"),
+    #     tickfont=dict(color="#1E293B")
+    # ),
+    # yaxis=dict(
+    #     title=y_axis_label,
+    #     title_font=dict(color="#1E293B"),
+    #     tickfont=dict(color="#1E293B")
+    # ),
+    height=420,
+    plot_bgcolor="#FFFFFF",
+    paper_bgcolor="#FFFFFF",
+    font=dict(color="#1E293B")
+)
+    
     return fig
 
 # ---------------- MAIN ----------------
