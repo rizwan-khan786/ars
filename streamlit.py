@@ -4971,320 +4971,320 @@
 # # #     st.info("⬆️ Upload your Excel file to begin analysis.")
 
 
-# # import streamlit as st
-# # import pandas as pd
-# # import numpy as np
-# # import plotly.graph_objects as go
+# import streamlit as st
+# import pandas as pd
+# import numpy as np
+# import plotly.graph_objects as go
 
-# # st.set_page_config(page_title="GHG Summary Analyzer — DNH Spinners", layout="wide")
-# # st.title("GHG Summary Analyzer")
-# # st.caption("D.N.H. SPINNERS PVT. LTD. — Automatic data from Summar Sheet · Prediction = constant avg of known months")
+# st.set_page_config(page_title="GHG Summary Analyzer — DNH Spinners", layout="wide")
+# st.title("GHG Summary Analyzer")
+# st.caption("D.N.H. SPINNERS PVT. LTD. — Automatic data from Summar Sheet · Prediction = constant avg of known months")
 
-# # uploaded = st.file_uploader("Upload Excel (.xlsx)", type=["xlsx"])
+# uploaded = st.file_uploader("Upload Excel (.xlsx)", type=["xlsx"])
 
-# # # ====================== CONFIG ======================
-# # FISCAL_YEAR_ORDER = ["April","May","June","July","Aug","Sept","Oct","Nov","Dec","Jan","Feb","Mar"]
+# # ====================== CONFIG ======================
+# FISCAL_YEAR_ORDER = ["April","May","June","July","Aug","Sept","Oct","Nov","Dec","Jan","Feb","Mar"]
 
-# # # Column positions in Summary sheet (0-indexed): col 8=April ... col 19=Mar
-# # MONTH_COL_MAP = {m: i for i, m in enumerate(FISCAL_YEAR_ORDER, start=8)}
+# # Column positions in Summary sheet (0-indexed): col 8=April ... col 19=Mar
+# MONTH_COL_MAP = {m: i for i, m in enumerate(FISCAL_YEAR_ORDER, start=8)}
 
-# # # Row indices in Summary sheet (0-indexed)
-# # METRIC_ROWS = {
-# #     "Emission per ton of Equivalent product": 102,
-# #     "Total Direct and Indirect Emission": 101,
-# #     "Total Direct Emission (Scope 1)": 91,
-# #     "Total Indirect Emission (Scope 2)": 99,
-# #     "Total Equivalent Product for GHG Emission Intensity": 76,
-# # }
+# # Row indices in Summary sheet (0-indexed)
+# METRIC_ROWS = {
+#     "Emission per ton of Equivalent product": 102,
+#     "Total Direct and Indirect Emission": 101,
+#     "Total Direct Emission (Scope 1)": 91,
+#     "Total Indirect Emission (Scope 2)": 99,
+#     "Total Equivalent Product for GHG Emission Intensity": 76,
+# }
 
-# # OTHER_CHART_CONFIGS = [
-# #     {"label": "Total Direct and Indirect Emission", "y_axis": "tCO₂ eq", "color": "#E53935"},
-# #     {"label": "Total Direct Emission (Scope 1)", "y_axis": "tCO₂ eq", "color": "#FF7043"},
-# #     {"label": "Total Indirect Emission (Scope 2)", "y_axis": "tCO₂ eq", "color": "#7B1FA2"},
-# #     {"label": "Total Equivalent Product for GHG Emission Intensity", "y_axis": "Tonnes", "color": "#2E7D32"},
-# # ]
+# OTHER_CHART_CONFIGS = [
+#     {"label": "Total Direct and Indirect Emission", "y_axis": "tCO₂ eq", "color": "#E53935"},
+#     {"label": "Total Direct Emission (Scope 1)", "y_axis": "tCO₂ eq", "color": "#FF7043"},
+#     {"label": "Total Indirect Emission (Scope 2)", "y_axis": "tCO₂ eq", "color": "#7B1FA2"},
+#     {"label": "Total Equivalent Product for GHG Emission Intensity", "y_axis": "Tonnes", "color": "#2E7D32"},
+# ]
 
-# # BASELINE_VALUE = 0.3552
+# BASELINE_VALUE = 0.3552
 
-# # # ====================== HELPERS ======================
-# # def load_summary_sheet(uploaded_file):
-# #     for eng in ("openpyxl", "calamine"):
-# #         try:
-# #             raw = pd.read_excel(uploaded_file, sheet_name="Summar sheet", header=None, engine=eng)
-# #             return raw, eng
-# #         except Exception:
-# #             continue
-# #     raise ImportError("Could not read Summar sheet.")
+# # ====================== HELPERS ======================
+# def load_summary_sheet(uploaded_file):
+#     for eng in ("openpyxl", "calamine"):
+#         try:
+#             raw = pd.read_excel(uploaded_file, sheet_name="Summar sheet", header=None, engine=eng)
+#             return raw, eng
+#         except Exception:
+#             continue
+#     raise ImportError("Could not read Summar sheet.")
 
-# # def extract_ghg_data(raw):
-# #     """Extract all GHG metrics from fixed row/column positions."""
-# #     ghg_data = {}
-# #     months_with_data = []
+# def extract_ghg_data(raw):
+#     """Extract all GHG metrics from fixed row/column positions."""
+#     ghg_data = {}
+#     months_with_data = []
 
-# #     for label, row_idx in METRIC_ROWS.items():
-# #         row = raw.iloc[row_idx]
-# #         ghg_data[label] = {}
-# #         for month, col_idx in MONTH_COL_MAP.items():
-# #             try:
-# #                 val = pd.to_numeric(row.iloc[col_idx], errors="coerce")
-# #                 if pd.notna(val) and val != 0.0:
-# #                     ghg_data[label][month] = float(val)
-# #             except Exception:
-# #                 pass
+#     for label, row_idx in METRIC_ROWS.items():
+#         row = raw.iloc[row_idx]
+#         ghg_data[label] = {}
+#         for month, col_idx in MONTH_COL_MAP.items():
+#             try:
+#                 val = pd.to_numeric(row.iloc[col_idx], errors="coerce")
+#                 if pd.notna(val) and val != 0.0:
+#                     ghg_data[label][month] = float(val)
+#             except Exception:
+#                 pass
 
-# #     # Months known = months that have GEI data (most reliable indicator)
-# #     gei_key = "Emission per ton of Equivalent product"
-# #     months_with_data = [m for m in FISCAL_YEAR_ORDER if m in ghg_data.get(gei_key, {})]
+#     # Months known = months that have GEI data (most reliable indicator)
+#     gei_key = "Emission per ton of Equivalent product"
+#     months_with_data = [m for m in FISCAL_YEAR_ORDER if m in ghg_data.get(gei_key, {})]
 
-# #     # Fallback: any month with at least one non-zero metric
-# #     if not months_with_data:
-# #         for month in FISCAL_YEAR_ORDER:
-# #             for label in METRIC_ROWS:
-# #                 if month in ghg_data.get(label, {}):
-# #                     if month not in months_with_data:
-# #                         months_with_data.append(month)
+#     # Fallback: any month with at least one non-zero metric
+#     if not months_with_data:
+#         for month in FISCAL_YEAR_ORDER:
+#             for label in METRIC_ROWS:
+#                 if month in ghg_data.get(label, {}):
+#                     if month not in months_with_data:
+#                         months_with_data.append(month)
 
-# #     return ghg_data, months_with_data
+#     return ghg_data, months_with_data
 
-# # def predict_constant_avg(ghg_data, label, months_known):
-# #     """Flat constant prediction = average of known months for all missing months."""
-# #     known_vals = [ghg_data[label][m] for m in months_known if m in ghg_data.get(label, {})]
-# #     if not known_vals:
-# #         return {}
-# #     avg = float(np.mean(known_vals))
-# #     missing = [m for m in FISCAL_YEAR_ORDER if m not in ghg_data.get(label, {})]
-# #     return {m: round(avg, 6) for m in missing}
+# def predict_constant_avg(ghg_data, label, months_known):
+#     """Flat constant prediction = average of known months for all missing months."""
+#     known_vals = [ghg_data[label][m] for m in months_known if m in ghg_data.get(label, {})]
+#     if not known_vals:
+#         return {}
+#     avg = float(np.mean(known_vals))
+#     missing = [m for m in FISCAL_YEAR_ORDER if m not in ghg_data.get(label, {})]
+#     return {m: round(avg, 6) for m in missing}
 
-# # # ====================== CHARTS ======================
-# # def make_gei_chart(ghg_data, months_known, t_line_value, show_prediction):
-# #     label = "Emission per ton of Equivalent product"
-# #     display_months = FISCAL_YEAR_ORDER
+# # ====================== CHARTS ======================
+# def make_gei_chart(ghg_data, months_known, t_line_value, show_prediction):
+#     label = "Emission per ton of Equivalent product"
+#     display_months = FISCAL_YEAR_ORDER
 
-# #     actual_x = [m for m in FISCAL_YEAR_ORDER if m in ghg_data.get(label, {})]
-# #     actual_y = [ghg_data[label][m] for m in actual_x]
+#     actual_x = [m for m in FISCAL_YEAR_ORDER if m in ghg_data.get(label, {})]
+#     actual_y = [ghg_data[label][m] for m in actual_x]
 
-# #     pred_dict = predict_constant_avg(ghg_data, label, months_known) if show_prediction else {}
-# #     pred_x = list(pred_dict.keys())
-# #     pred_y = list(pred_dict.values())
+#     pred_dict = predict_constant_avg(ghg_data, label, months_known) if show_prediction else {}
+#     pred_x = list(pred_dict.keys())
+#     pred_y = list(pred_dict.values())
 
-# #     all_vals = actual_y + pred_y + [t_line_value, BASELINE_VALUE]
-# #     margin = (max(all_vals) - min(all_vals)) * 0.1 if all_vals else 0.02
-# #     y_range = [min(all_vals) - margin, max(all_vals) + margin]
+#     all_vals = actual_y + pred_y + [t_line_value, BASELINE_VALUE]
+#     margin = (max(all_vals) - min(all_vals)) * 0.1 if all_vals else 0.02
+#     y_range = [min(all_vals) - margin, max(all_vals) + margin]
 
-# #     fig = go.Figure()
+#     fig = go.Figure()
 
-# #     # Shaded zone between T and Baseline
-# #     fig.add_trace(go.Scatter(x=display_months, y=[t_line_value]*12, mode="lines",
-# #                              line=dict(width=0), showlegend=False))
-# #     fig.add_trace(go.Scatter(x=display_months, y=[BASELINE_VALUE]*12, mode="lines",
-# #                              line=dict(width=0), fill="tonexty",
-# #                              fillcolor="rgba(100,220,130,0.15)", name="Zone: T ↔ Target",
-# #                              showlegend=True))
+#     # Shaded zone between T and Baseline
+#     fig.add_trace(go.Scatter(x=display_months, y=[t_line_value]*12, mode="lines",
+#                              line=dict(width=0), showlegend=False))
+#     fig.add_trace(go.Scatter(x=display_months, y=[BASELINE_VALUE]*12, mode="lines",
+#                              line=dict(width=0), fill="tonexty",
+#                              fillcolor="rgba(100,220,130,0.15)", name="Zone: T ↔ Target",
+#                              showlegend=True))
 
-# #     # Actual GEI
-# #     if actual_x:
-# #         fig.add_trace(go.Scatter(
-# #             x=actual_x, y=actual_y, name="Actual GEI",
-# #             mode="lines+markers+text",
-# #             line=dict(color="#00E676", width=4, shape="spline"),
-# #             marker=dict(size=10, color="#00E676", line=dict(color="white", width=2)),
-# #             text=[f"{v:.4f}" for v in actual_y], textposition="top center",
-# #         ))
+#     # Actual GEI
+#     if actual_x:
+#         fig.add_trace(go.Scatter(
+#             x=actual_x, y=actual_y, name="Actual GEI",
+#             mode="lines+markers+text",
+#             line=dict(color="#00E676", width=4, shape="spline"),
+#             marker=dict(size=10, color="#00E676", line=dict(color="white", width=2)),
+#             text=[f"{v:.4f}" for v in actual_y], textposition="top center",
+#         ))
 
-# #     # Prediction — constant flat line for missing months
-# #     if pred_x and show_prediction:
-# #         # Join connector
-# #         if actual_x:
-# #             last_actual_m = actual_x[-1]
-# #             first_pred_m = pred_x[0]
-# #             # Only draw connector if adjacent in fiscal order
-# #             fig.add_trace(go.Scatter(
-# #                 x=[last_actual_m, first_pred_m],
-# #                 y=[actual_y[-1], pred_y[0]],
-# #                 mode="lines", line=dict(color="#00E676", width=2, dash="dot"),
-# #                 showlegend=False
-# #             ))
-# #         fig.add_trace(go.Scatter(
-# #             x=pred_x, y=pred_y, name=f"Predicted GEI (avg = {pred_y[0]:.4f})",
-# #             mode="lines+markers+text",
-# #             line=dict(color="#80CBC4", width=3, dash="dot", shape="linear"),
-# #             marker=dict(size=8, color="#80CBC4", symbol="diamond"),
-# #             text=[f"{v:.4f}" for v in pred_y], textposition="top center",
-# #         ))
+#     # Prediction — constant flat line for missing months
+#     if pred_x and show_prediction:
+#         # Join connector
+#         if actual_x:
+#             last_actual_m = actual_x[-1]
+#             first_pred_m = pred_x[0]
+#             # Only draw connector if adjacent in fiscal order
+#             fig.add_trace(go.Scatter(
+#                 x=[last_actual_m, first_pred_m],
+#                 y=[actual_y[-1], pred_y[0]],
+#                 mode="lines", line=dict(color="#00E676", width=2, dash="dot"),
+#                 showlegend=False
+#             ))
+#         fig.add_trace(go.Scatter(
+#             x=pred_x, y=pred_y, name=f"Predicted GEI (avg = {pred_y[0]:.4f})",
+#             mode="lines+markers+text",
+#             line=dict(color="#80CBC4", width=3, dash="dot", shape="linear"),
+#             marker=dict(size=8, color="#80CBC4", symbol="diamond"),
+#             text=[f"{v:.4f}" for v in pred_y], textposition="top center",
+#         ))
 
-# #     # T Line
-# #     fig.add_trace(go.Scatter(
-# #         x=display_months, y=[t_line_value]*12,
-# #         name=f"T = {t_line_value:.6f}", mode="lines",
-# #         line=dict(color="#43A047", width=2),
-# #     ))
+#     # T Line
+#     fig.add_trace(go.Scatter(
+#         x=display_months, y=[t_line_value]*12,
+#         name=f"T = {t_line_value:.6f}", mode="lines",
+#         line=dict(color="#43A047", width=2),
+#     ))
 
-# #     # Baseline Target
-# #     fig.add_trace(go.Scatter(
-# #         x=display_months, y=[BASELINE_VALUE]*12,
-# #         name=f"Baseline Target = {BASELINE_VALUE:.4f}", mode="lines",
-# #         line=dict(color="#F44336", width=2, dash="dash"),
-# #     ))
+#     # Baseline Target
+#     fig.add_trace(go.Scatter(
+#         x=display_months, y=[BASELINE_VALUE]*12,
+#         name=f"Baseline Target = {BASELINE_VALUE:.4f}", mode="lines",
+#         line=dict(color="#F44336", width=2, dash="dash"),
+#     ))
 
-# #     fig.update_layout(
-# #         title="GHG Emission Intensity — Actual GEI · T Line (Green) · Baseline Target (Red)",
-# #         xaxis=dict(title="Month (Fiscal Year Apr → Mar)", categoryorder="array", categoryarray=display_months),
-# #         yaxis=dict(title="GEI (tCO₂ eq/ton)", range=y_range),
-# #         height=580, hovermode="x unified",
-# #         legend=dict(orientation="h", y=1.02, x=1, xanchor="right"),
-# #         plot_bgcolor="#0f172a", paper_bgcolor="#020617",
-# #         font=dict(color="#e2e8f0"),
-# #     )
-# #     return fig
-
-
-# # def make_other_chart(ghg_data, label, chart_type, y_axis_label, color, months_known, show_prediction):
-# #     display_months = FISCAL_YEAR_ORDER
-
-# #     actual_x = [m for m in FISCAL_YEAR_ORDER if m in ghg_data.get(label, {})]
-# #     actual_y_map = ghg_data.get(label, {})
-
-# #     # Full 12-month series with None for missing
-# #     full_y = [actual_y_map.get(m) for m in display_months]
-# #     non_none_vals = [v for v in full_y if v is not None]
-
-# #     pred_dict = predict_constant_avg(ghg_data, label, months_known) if show_prediction else {}
-# #     pred_x = list(pred_dict.keys())
-# #     pred_y = list(pred_dict.values())
-
-# #     fig = go.Figure()
-
-# #     if chart_type == "Bar":
-# #         fig.add_trace(go.Bar(
-# #             x=actual_x, y=[actual_y_map[m] for m in actual_x],
-# #             name="Actual", marker_color=color
-# #         ))
-# #         if pred_x and show_prediction:
-# #             fig.add_trace(go.Bar(
-# #                 x=pred_x, y=pred_y,
-# #                 name=f"Predicted (avg = {pred_y[0]:,.0f})",
-# #                 marker_color=color, opacity=0.4,
-# #                 marker_pattern_shape="/"
-# #             ))
-# #     elif chart_type == "Area":
-# #         fig.add_trace(go.Scatter(
-# #             x=actual_x, y=[actual_y_map[m] for m in actual_x],
-# #             name="Actual", mode="lines+markers",
-# #             fill="tozeroy", line=dict(color=color, width=3, shape="spline")
-# #         ))
-# #         if pred_x and show_prediction:
-# #             if actual_x:
-# #                 fig.add_trace(go.Scatter(
-# #                     x=[actual_x[-1], pred_x[0]],
-# #                     y=[actual_y_map[actual_x[-1]], pred_y[0]],
-# #                     mode="lines", line=dict(color=color, width=2, dash="dot"),
-# #                     showlegend=False
-# #                 ))
-# #             fig.add_trace(go.Scatter(
-# #                 x=pred_x, y=pred_y,
-# #                 name=f"Predicted (avg = {pred_y[0]:,.0f})",
-# #                 mode="lines+markers", fill="tozeroy",
-# #                 line=dict(color=color, width=2, dash="dot", shape="linear"),
-# #                 marker=dict(size=7, symbol="diamond"), opacity=0.6
-# #             ))
-# #     else:  # Line
-# #         fig.add_trace(go.Scatter(
-# #             x=actual_x, y=[actual_y_map[m] for m in actual_x],
-# #             name="Actual", mode="lines+markers",
-# #             line=dict(color=color, width=3, shape="spline")
-# #         ))
-# #         if pred_x and show_prediction:
-# #             if actual_x:
-# #                 fig.add_trace(go.Scatter(
-# #                     x=[actual_x[-1], pred_x[0]],
-# #                     y=[actual_y_map[actual_x[-1]], pred_y[0]],
-# #                     mode="lines", line=dict(color=color, width=2, dash="dot"),
-# #                     showlegend=False
-# #                 ))
-# #             fig.add_trace(go.Scatter(
-# #                 x=pred_x, y=pred_y,
-# #                 name=f"Predicted (avg = {pred_y[0]:,.0f})",
-# #                 mode="lines+markers",
-# #                 line=dict(color=color, width=2, dash="dot", shape="linear"),
-# #                 marker=dict(size=7, symbol="diamond")
-# #             ))
-
-# #     fig.update_layout(
-# #         title=f"{label} — Full Fiscal Year with Constant Avg Prediction",
-# #         xaxis=dict(title="Month (Fiscal Year Apr → Mar)", categoryorder="array", categoryarray=display_months),
-# #         yaxis=dict(title=y_axis_label),
-# #         height=420, hovermode="x unified",
-# #         plot_bgcolor="#0f172a", paper_bgcolor="#020617",
-# #         font=dict(color="#e2e8f0"),
-# #     )
-# #     return fig
+#     fig.update_layout(
+#         title="GHG Emission Intensity — Actual GEI · T Line (Green) · Baseline Target (Red)",
+#         xaxis=dict(title="Month (Fiscal Year Apr → Mar)", categoryorder="array", categoryarray=display_months),
+#         yaxis=dict(title="GEI (tCO₂ eq/ton)", range=y_range),
+#         height=580, hovermode="x unified",
+#         legend=dict(orientation="h", y=1.02, x=1, xanchor="right"),
+#         plot_bgcolor="#0f172a", paper_bgcolor="#020617",
+#         font=dict(color="#e2e8f0"),
+#     )
+#     return fig
 
 
-# # # ====================== MAIN ======================
-# # if uploaded:
-# #     try:
-# #         raw, engine = load_summary_sheet(uploaded)
-# #         ghg_data, months_known = extract_ghg_data(raw)
+# def make_other_chart(ghg_data, label, chart_type, y_axis_label, color, months_known, show_prediction):
+#     display_months = FISCAL_YEAR_ORDER
 
-# #         gei_label = "Emission per ton of Equivalent product"
-# #         months_known_gei = [m for m in FISCAL_YEAR_ORDER if m in ghg_data.get(gei_label, {})]
+#     actual_x = [m for m in FISCAL_YEAR_ORDER if m in ghg_data.get(label, {})]
+#     actual_y_map = ghg_data.get(label, {})
 
-# #         st.success(f"✅ Loaded **Summar sheet** | Months with GEI data: **{months_known_gei}**")
+#     # Full 12-month series with None for missing
+#     full_y = [actual_y_map.get(m) for m in display_months]
+#     non_none_vals = [v for v in full_y if v is not None]
 
-# #         with st.sidebar:
-# #             st.header("Controls")
-# #             t_line_value = st.number_input("T Line (Green)", value=0.315300, format="%.6f", step=0.0001)
-# #             show_prediction = st.checkbox(" Predict", value=True)
-# #             ghg_chart_type = st.radio("Other Charts Type", ["Line", "Bar", "Area"], index=2)
-# #             st.markdown("---")
-# #             # st.caption(f"Engine: {engine} | Shape: {raw.shape}")
+#     pred_dict = predict_constant_avg(ghg_data, label, months_known) if show_prediction else {}
+#     pred_x = list(pred_dict.keys())
+#     pred_y = list(pred_dict.values())
 
-# #         # ---- GEI Chart ----
-# #         st.markdown("---")
-# #         st.subheader("🎯 Emission Intensity per Ton — GEI")
-# #         fig_gei = make_gei_chart(ghg_data, months_known_gei, t_line_value, show_prediction)
-# #         st.plotly_chart(fig_gei, use_container_width=True)
+#     fig = go.Figure()
 
-# #         # ---- Prediction Table ----
-# #         if show_prediction and months_known_gei:
-# #             st.markdown("---")
-# #             st.subheader("📊 Constant Avg Prediction Table (All Metrics)")
-# #             st.caption(f"Prediction = flat average of known months: **{', '.join(months_known_gei)}**")
+#     if chart_type == "Bar":
+#         fig.add_trace(go.Bar(
+#             x=actual_x, y=[actual_y_map[m] for m in actual_x],
+#             name="Actual", marker_color=color
+#         ))
+#         if pred_x and show_prediction:
+#             fig.add_trace(go.Bar(
+#                 x=pred_x, y=pred_y,
+#                 name=f"Predicted (avg = {pred_y[0]:,.0f})",
+#                 marker_color=color, opacity=0.4,
+#                 marker_pattern_shape="/"
+#             ))
+#     elif chart_type == "Area":
+#         fig.add_trace(go.Scatter(
+#             x=actual_x, y=[actual_y_map[m] for m in actual_x],
+#             name="Actual", mode="lines+markers",
+#             fill="tozeroy", line=dict(color=color, width=3, shape="spline")
+#         ))
+#         if pred_x and show_prediction:
+#             if actual_x:
+#                 fig.add_trace(go.Scatter(
+#                     x=[actual_x[-1], pred_x[0]],
+#                     y=[actual_y_map[actual_x[-1]], pred_y[0]],
+#                     mode="lines", line=dict(color=color, width=2, dash="dot"),
+#                     showlegend=False
+#                 ))
+#             fig.add_trace(go.Scatter(
+#                 x=pred_x, y=pred_y,
+#                 name=f"Predicted (avg = {pred_y[0]:,.0f})",
+#                 mode="lines+markers", fill="tozeroy",
+#                 line=dict(color=color, width=2, dash="dot", shape="linear"),
+#                 marker=dict(size=7, symbol="diamond"), opacity=0.6
+#             ))
+#     else:  # Line
+#         fig.add_trace(go.Scatter(
+#             x=actual_x, y=[actual_y_map[m] for m in actual_x],
+#             name="Actual", mode="lines+markers",
+#             line=dict(color=color, width=3, shape="spline")
+#         ))
+#         if pred_x and show_prediction:
+#             if actual_x:
+#                 fig.add_trace(go.Scatter(
+#                     x=[actual_x[-1], pred_x[0]],
+#                     y=[actual_y_map[actual_x[-1]], pred_y[0]],
+#                     mode="lines", line=dict(color=color, width=2, dash="dot"),
+#                     showlegend=False
+#                 ))
+#             fig.add_trace(go.Scatter(
+#                 x=pred_x, y=pred_y,
+#                 name=f"Predicted (avg = {pred_y[0]:,.0f})",
+#                 mode="lines+markers",
+#                 line=dict(color=color, width=2, dash="dot", shape="linear"),
+#                 marker=dict(size=7, symbol="diamond")
+#             ))
 
-# #             table_rows = []
-# #             for label in METRIC_ROWS:
-# #                 known_for_label = [m for m in FISCAL_YEAR_ORDER if m in ghg_data.get(label, {})]
-# #                 pred = predict_constant_avg(ghg_data, label, known_for_label)
-# #                 for month, val in pred.items():
-# #                     table_rows.append({"Metric": label, "Month": month, "Predicted Value": val})
+#     fig.update_layout(
+#         title=f"{label} — Full Fiscal Year with Constant Avg Prediction",
+#         xaxis=dict(title="Month (Fiscal Year Apr → Mar)", categoryorder="array", categoryarray=display_months),
+#         yaxis=dict(title=y_axis_label),
+#         height=420, hovermode="x unified",
+#         plot_bgcolor="#0f172a", paper_bgcolor="#020617",
+#         font=dict(color="#e2e8f0"),
+#     )
+#     return fig
 
-# #             if table_rows:
-# #                 pred_df = pd.DataFrame(table_rows)
-# #                 pivot = pred_df.pivot(index="Metric", columns="Month", values="Predicted Value")
-# #                 # Reorder columns to fiscal year order
-# #                 ordered_cols = [m for m in FISCAL_YEAR_ORDER if m in pivot.columns]
-# #                 st.dataframe(pivot[ordered_cols].style.format("{:.4f}"), use_container_width=True)
 
-# #         # ---- Other GHG Charts ----
-# #         st.markdown("---")
-# #         st.subheader("📈 Other GHG Metrics — Full Year with Constant Avg Prediction")
-# #         for cfg in OTHER_CHART_CONFIGS:
-# #             lbl = cfg["label"]
-# #             if lbl in ghg_data and ghg_data[lbl]:
-# #                 st.subheader(lbl)
-# #                 known_for_label = [m for m in FISCAL_YEAR_ORDER if m in ghg_data.get(lbl, {})]
-# #                 fig = make_other_chart(
-# #                     ghg_data, lbl, ghg_chart_type, cfg["y_axis"], cfg["color"],
-# #                     known_for_label, show_prediction
-# #                 )
-# #                 st.plotly_chart(fig, use_container_width=True)
+# # ====================== MAIN ======================
+# if uploaded:
+#     try:
+#         raw, engine = load_summary_sheet(uploaded)
+#         ghg_data, months_known = extract_ghg_data(raw)
 
-# #     except Exception as e:
-# #         st.error(f"Error: {e}")
-# #         import traceback; st.code(traceback.format_exc())
+#         gei_label = "Emission per ton of Equivalent product"
+#         months_known_gei = [m for m in FISCAL_YEAR_ORDER if m in ghg_data.get(gei_label, {})]
 
-# # else:
-# #     st.info("⬆️ Upload your Excel file (DNH_for_software__1_.xlsx) to begin analysis.")
+#         st.success(f"✅ Loaded **Summar sheet** | Months with GEI data: **{months_known_gei}**")
+
+#         with st.sidebar:
+#             st.header("Controls")
+#             t_line_value = st.number_input("T Line (Green)", value=0.315300, format="%.6f", step=0.0001)
+#             show_prediction = st.checkbox(" Predict", value=True)
+#             ghg_chart_type = st.radio("Other Charts Type", ["Line", "Bar", "Area"], index=2)
+#             st.markdown("---")
+#             # st.caption(f"Engine: {engine} | Shape: {raw.shape}")
+
+#         # ---- GEI Chart ----
+#         st.markdown("---")
+#         st.subheader("🎯 Emission Intensity per Ton — GEI")
+#         fig_gei = make_gei_chart(ghg_data, months_known_gei, t_line_value, show_prediction)
+#         st.plotly_chart(fig_gei, use_container_width=True)
+
+#         # ---- Prediction Table ----
+#         if show_prediction and months_known_gei:
+#             st.markdown("---")
+#             st.subheader("📊 Constant Avg Prediction Table (All Metrics)")
+#             st.caption(f"Prediction = flat average of known months: **{', '.join(months_known_gei)}**")
+
+#             table_rows = []
+#             for label in METRIC_ROWS:
+#                 known_for_label = [m for m in FISCAL_YEAR_ORDER if m in ghg_data.get(label, {})]
+#                 pred = predict_constant_avg(ghg_data, label, known_for_label)
+#                 for month, val in pred.items():
+#                     table_rows.append({"Metric": label, "Month": month, "Predicted Value": val})
+
+#             if table_rows:
+#                 pred_df = pd.DataFrame(table_rows)
+#                 pivot = pred_df.pivot(index="Metric", columns="Month", values="Predicted Value")
+#                 # Reorder columns to fiscal year order
+#                 ordered_cols = [m for m in FISCAL_YEAR_ORDER if m in pivot.columns]
+#                 st.dataframe(pivot[ordered_cols].style.format("{:.4f}"), use_container_width=True)
+
+#         # ---- Other GHG Charts ----
+#         st.markdown("---")
+#         st.subheader("📈 Other GHG Metrics — Full Year with Constant Avg Prediction")
+#         for cfg in OTHER_CHART_CONFIGS:
+#             lbl = cfg["label"]
+#             if lbl in ghg_data and ghg_data[lbl]:
+#                 st.subheader(lbl)
+#                 known_for_label = [m for m in FISCAL_YEAR_ORDER if m in ghg_data.get(lbl, {})]
+#                 fig = make_other_chart(
+#                     ghg_data, lbl, ghg_chart_type, cfg["y_axis"], cfg["color"],
+#                     known_for_label, show_prediction
+#                 )
+#                 st.plotly_chart(fig, use_container_width=True)
+
+#     except Exception as e:
+#         st.error(f"Error: {e}")
+#         import traceback; st.code(traceback.format_exc())
+
+# else:
+#     st.info("⬆️ Upload your Excel file (DNH_for_software__1_.xlsx) to begin analysis.")
 
 # import streamlit as st
 # import pandas as pd
@@ -5642,7 +5642,47 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 
+# st.set_page_config(page_title="GHG Summary Analyzer", layout="wide")
 st.set_page_config(page_title="GHG Summary Analyzer", layout="wide")
+
+# ✅ ADD THIS HERE
+st.markdown("""
+<style>
+
+/* Sidebar background */
+section[data-testid="stSidebar"] {
+    background-color: #020617;
+}
+
+/* Sidebar text */
+section[data-testid="stSidebar"] * {
+    color: #E2E8F0 !important;
+    font-size: 16px !important;
+}
+
+/* Sidebar headers */
+section[data-testid="stSidebar"] h1,
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3 {
+    font-size: 20px !important;
+    font-weight: 600;
+    color: #38BDF8 !important;
+}
+
+/* Input labels */
+section[data-testid="stSidebar"] label {
+    font-size: 16px !important;
+    font-weight: 500;
+}
+
+/* Inputs */
+section[data-testid="stSidebar"] input,
+section[data-testid="stSidebar"] div {
+    font-size: 16px !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
 st.title("GHG Summary Analyzer")
 
 uploaded = st.file_uploader("Upload Excel (.xlsx)", type=["xlsx"])
@@ -5866,12 +5906,26 @@ def make_gei_chart(ghg_data, t_line_value, selected_months, chart_type):
     ))
 
     fig.update_layout(
-        title="GEI Analysis",
-        height=600,
-        plot_bgcolor="#0f172a",
-        paper_bgcolor="#020617",
-        font=dict(color="white")
-    )
+    title="GEI Analysis",
+    xaxis=dict(
+        title="Month (Fiscal Year Apr → Mar)",
+        categoryorder="array",
+        categoryarray=FISCAL_YEAR_ORDER
+    ),
+    yaxis=dict(title="GEI (tCO₂ eq/ton)"),
+    height=600,
+    plot_bgcolor="#0f172a",
+    paper_bgcolor="#020617",
+    font=dict(color="white")
+)
+
+    # fig.update_layout(
+    #     title="GEI Analysis",
+    #     height=600,
+    #     plot_bgcolor="#0f172a",
+    #     paper_bgcolor="#020617",
+    #     font=dict(color="white")
+    # )
 
     return fig
 # ---------------- OTHER CHART ----------------
@@ -5946,14 +6000,27 @@ def make_other_chart(ghg_data, label, chart_type, y_axis_label, color, selected_
                                      mode="lines+markers", name="Predicted",
                                      line=dict(color=color, dash="dot")))
 
+    # fig.update_layout(
+    #     title=label,
+    #     height=420,
+    #     plot_bgcolor="#0f172a",
+    #     paper_bgcolor="#020617",
+    #     font=dict(color="white")
+    # )
+
     fig.update_layout(
         title=label,
+        xaxis=dict(
+            title="Month (Fiscal Year Apr → Mar)",
+            categoryorder="array",
+            categoryarray=FISCAL_YEAR_ORDER
+        ),
+        yaxis=dict(title=y_axis_label),
         height=420,
         plot_bgcolor="#0f172a",
         paper_bgcolor="#020617",
         font=dict(color="white")
     )
-
     return fig
 
 # ---------------- MAIN ----------------
@@ -5999,7 +6066,9 @@ if uploaded:
     st.plotly_chart(
     make_gei_chart(ghg_data, t_line_value, selected_months, chart_type),
     use_container_width=True
+
 )
+    
 
     st.subheader("Other GHG Metrics")
 
