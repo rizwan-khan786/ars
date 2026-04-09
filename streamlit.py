@@ -5643,7 +5643,13 @@ import numpy as np
 import plotly.graph_objects as go
 
 # st.set_page_config(page_title="GHG Summary Analyzer", layout="wide")
-st.set_page_config(page_title="GHG Summary Analyzer", layout="wide")
+# st.set_page_config(page_title="GHG Summary Analyzer", layout="wide")
+# st.set_page_config(page_title="D.N.H. SPINNERS PVT. LTD.", layout="wide")
+st.set_page_config(
+    page_title="D.N.H. SPINNERS PVT. LTD.",
+    page_icon="logo.png",  # 👈 your logo file
+    layout="wide"
+)
 
 # ✅ ADD THIS HERE
 # st.markdown("""
@@ -5732,7 +5738,8 @@ section[data-testid="stSidebar"] div {
 </style>
 """, unsafe_allow_html=True)
 
-st.title("GHG Summary Analyzer")
+# st.title("GHG Summary Analyzer")
+st.title("D.N.H. SPINNERS PVT. LTD.")
 
 uploaded = st.file_uploader("Upload Excel (.xlsx)", type=["xlsx"])
 
@@ -5947,12 +5954,12 @@ def make_gei_chart(ghg_data, t_line_value, selected_months, chart_type):
         line=dict(color="#F44336", dash="dash")
     ))
 
-    fig.add_trace(go.Scatter(
-        x=display_months,
-        y=[t_line_value]*len(display_months),
-        name="T Line",
-        line=dict(color="#43A047")
-    ))
+    # fig.add_trace(go.Scatter(
+    #     x=display_months,
+    #     y=[t_line_value]*len(display_months),
+    #     name="T Line",
+    #     line=dict(color="#43A047")
+    # ))
 
 #     fig.update_layout(
 #     title="GEI Analysis",
